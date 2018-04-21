@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1, maximum-scale=1.0,minimum-scale=1.0,user-scalable=no" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+	<meta name="format-detection" content="telephone=no" />
+	<meta name="format-detection" content="email=no" />
+    <title>民生权益日，周周有惊喜</title>
+    <link rel="stylesheet" href="css/index.css">
+    <script type="text/javascript" src="js/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="js/jquery.zclip.min.js"></script>
+
+</head>
+<body>
+<!-- banner -->
+<div id="banner"></div>
+
+<!-- discount -->
+<div id="discount">
+    <input type="hidden" value="2018,1,1,0,0,0;2018,12,31,23,59,59" class="dateValues"/>
+    <button type="button" id="discount_btn" data="1">提取优惠券码</button>
+    <div class="daojs">00天00小时00分</div>
+</div>
+
+<!-- rule -->
+ <div id="rule">
+    <h4>温馨提示：</h4>
+    <p>1、每周五对达标客户（千元达标、有效户）发送兑换邀请短信，客户可在此页面进行话费权益兑换；</p>
+    <p>2、优惠券兑换，只需输入券码，提交需要充值的手机号，即可获得话费；</p>
+    <p>3、7*24小时支持：全国移动、联通、电信手机及电信固话的充值(固话充值时，号码前请输入各地区号)；</p>
+    <p>4、客服电话：0755-22222007 4007882007。</p>
+</div>
+
+<!-- mask -->
+<div id="mask"></div>
+
+<!-- error -->
+<div id="error"></div>
+
+<!-- fail -->
+<div id="fail">
+    <h4>抱歉！</h4>
+    <p>
+        您不在本期活动白名单内，请联系您的理财经理咨询相关权益
+    </p>
+    <button type="button" id="fail_sure">确定</button>
+</div>
+
+<!-- success -->
+<div id="success" style="display: block">
+    <h4>
+        恭喜您，提取成功！
+    </h4>
+    <div class="con">
+        <div class="con0">
+            <input type="text" value="XXXXXX" id="suc_inpt">
+            <button type="button" id="copy_btn">复制券码</button>
+        </div>
+    </div>
+    <a href="#" id="success_sure">立刻下单</a>
+</div>
+
+<!-- userInfo -->
+<div id="userInfo">
+    <div class="con">
+        <input type="telephone" placeholder="请输入手机号" id="telphone" />
+    </div>
+    <div class="con">
+        <input type="text" placeholder="请输入身份证后4位" id="IDcode" />
+    </div>
+    <div class="con">
+        <input type="text" placeholder="请输入验证码" id="yzCode" />
+        <button type="button" id="getCode">获取验证码</button>
+    </div>
+    <div class="con0">
+        <input type="hidden" id="rechargeType" />
+        <button type="button" id="userInfo_sure">确定</button>
+        <button type="button" id="userInfo_cancel">取消</button>
+    </div>
+</div>
+
+<script type="text/javascript">
+    //userInfor弹出
+    $('#discount_btn').click(function(){
+        $('#mask').show();
+        $('#userInfo').show();
+        $('#rechargeType').val($(this).attr('data'));
+    })
+    //userInfor取消
+    $('#userInfo_cancel').click(function(){
+        $('#mask').hide();
+        $('#userInfo').hide();
+    })
+    //fail确定
+    $('#fail_sure').click(function(){
+        $('#mask').hide();
+        $('#fail').hide();
+    })
+    //success立刻下单
+    $('#success_sure').click(function(){
+        $('#mask').hide();
+        $('#success').hide();
+    })
+    //错误提示
+    function errorForm(obj){
+        $('#error').show().text(obj);
+        setTimeout("$('#error').hide()",2000);
+    }
+    //验证码倒计时
+    function countDownYZ(){
+        var timer=60;
+        var $btn=$('#getCode');
+        var setTimer=setInterval(function(){
+            if(timer==0){
+                timer=60;
+                $btn.html('重新获取')
+                clearInterval(setTimer);
+                $btn.removeAttr('disabled');
+            }else{
+                $btn.html(timer+'s');
+                timer--;
+                $btn.attr('disabled','disabled');
+            }
+        },1000)
+    }
+    //发送验证码
+    $('#getCode').click(function(){
+        var telVal=$('#telphone').val();
+        var telReg = /^1\d{10}$/;
+        if(telVal==''){
+            errorForm('请输入手机号');
+            return false;
+        }else if(!telReg.test(telVal)){
+            errorForm('请输入正确手机号');
+            return false;
+        }else{
+            countDownYZ();
+            /*$.ajax({
+                url: '{php echo create_url('homepage/get_sms_code')}',
+                type: 'post',
+                data:{
+                    telphone: telVal
+                },
+                success:function(data){
+                    console.log(data);
+                }
+            });*/
+        }
+    })
+    //userInfor确定
+    function recharge(){
+        var _this = $(this);
+        var phone = $('#telphone').val();
+        var code = $('#yzCode').val();
+        var IDCard = $('#IDcode').val();
+        var telReg = /^1\d{10}$/;
+        var rechargeType = $('#rechargeType').val();
+        if(phone==''){
+            errorForm('请输入手机号');
+            return false;
+        }
+
+        if(!telReg.test(phone)){
+            errorForm('请输入正确手机号');
+            return false;
+        }
+
+        if(code== ''){
+            errorForm('请输入验证码');
+            return false;
+        }
+
+        if(IDCard.length != 4){
+            errorForm('请输入身份证后四位');
+            return false;
+        }
+        $('#fail').show();
+        //$('#success').show();
+        $('#userInfo').hide();
+        // $.ajax({
+        //     url:'api/phoneRecharge.php',
+        //     type:'POST',
+        //     dataType:'JSON',
+        //     data:{'type':rechargeType,'mobile':phone,'verifyCode':code,'IDCard':IDCard},
+        //     beforeSend:function(){
+        //         _this.off('click',recharge);
+        //     },
+        //     success:function(result){
+        //         _this.on('click',recharge);
+        //         if(result.state == 200){
+        //            popUp(result.msg);
+        //         }else{
+        //             showMsg(result.msg);
+        //         }
+        //     }
+        // });
+
+    }
+    $('#userInfo_sure').click(function(){
+        recharge();
+    })
+    //复制(文件要放到服务器中才能运行，直接运行html文件是不行的)
+    $('#copy_input').zclip({        　 //copy_input表示 按钮
+        path: 'js/ZeroClipboard.swf',
+        copy: function(){ 　　　　　　　　　　//复制内容
+            return $('#suc_inpt').val();  　 //mytext表示 内容
+        },
+        afterCopy: function(){ //复制成功
+            // $("<span id='msg'/>").insertAfter($('#copy_input')).text('复制成功');
+            alert('复制成功');
+        }
+    });
+    //倒计时对象
+    function countDown(labelObject,startDate,endDate){
+        this.labelObject = labelObject;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.main = function(){
+            var interValId;
+            var labelObject = this.labelObject;
+            var startDate   = this.startDate;
+            var endDate     = this.endDate;
+            interValId = setInterval(function(){
+                var currentTime = new Date();
+                var startTime = new Date(startDate.year,startDate.month-1,startDate.day,startDate.mini,startDate.sec);
+                var endTime = new Date(endDate.year,endDate.month-1,endDate.day,endDate.mini,endDate.sec);
+                var nearStart = Math.round((startTime.getTime() - currentTime.getTime())/1000);
+                var nearEnd = Math.round((endTime.getTime() - currentTime.getTime())/1000);
+                var pms = {sec: "00", mini: "00", hour: "00", day: "00", month: "00", year: "0"};
+
+                if(nearStart > 0){
+                    labelObject.innerHTML = '活动尚未开始';
+                    clearInterval(interValId);
+                    return false;
+                }
+                pms.sec = nearEnd%60;
+                pms.mini = Math.floor((nearEnd/60));
+                pms.hour = Math.floor((nearEnd/3600));
+                pms.day = Math.floor((nearEnd/86400));
+                pms.month = Math.floor((nearEnd/2629744));
+//                pms.year = Math.floor((nearEnd/31556926));
+
+                var seconds = pms.sec;
+                var minutes = pms.mini>0 ? pms.mini%60:"00";
+                var hours = pms.hour>0 ? pms.hour%24:"00";
+                var days = pms.day>0 ? pms.day%30:"00";
+                var months = pms.month>0 ? pms.month%12:"00";
+//                var years = pms.year>0 ? pms.year:"0";
+                if (months < 10){
+                    months = "0" + months;
+                }
+                if (days < 10){
+                    days = "0" + days;
+                }
+
+                if (hours < 10){
+                    hours = "0" + hours;
+                }
+
+                if (minutes < 10){
+                    minutes = "0" + minutes;
+                }
+
+                if (seconds < 10){
+                    seconds = "0" + seconds;
+                }
+
+                do{
+                    if(days>0){
+                        break;
+                    }
+                    if(hours>0){
+                        break;
+                    }
+                    if(minutes>0){
+                        break;
+                    }
+                    if(seconds>0){
+                        break;
+                    }else{
+                        labelObject.innerHTML = '活动已结束';
+                        clearInterval(interValId);
+                        return false;
+                    }
+                }while(false);
+                labelObject.innerHTML= months+'月'+days+'天'+hours+'小时'+minutes+'分'+seconds+'秒';
+            },1000);
+        };
+    }
+    var myLabels = document.getElementsByClassName('daojs');
+    var dates    = document.getElementsByClassName('dateValues');
+    for(var i=0; i<myLabels.length;i++){
+        var myDate = dates[i].value;
+        var tmpDateArray = myDate.split(';');
+        var startArray = tmpDateArray[0].split(',');
+        var endArray = tmpDateArray[1].split(',');
+        var starDate = {year:startArray[0],month:startArray[1],day:startArray[2], hour:startArray[3],mini:startArray[4],sec:startArray[5]};
+        var endDate = {year:endArray[0],month:endArray[1],day:endArray[2],hour:endArray[3],mini:endArray[4],sec:endArray[5]};
+        var myCountDown = new countDown(myLabels[i],starDate,endDate);
+        myCountDown.main();
+    }
+   
+    
+</script>
+</body>
+</html>
