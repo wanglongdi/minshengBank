@@ -10,7 +10,7 @@
     <title>民生权益日，周周有惊喜</title>
     <link rel="stylesheet" href="css/index.css">
     <script type="text/javascript" src="js/jquery-2.1.4.js"></script>
-    <script type="text/javascript" src="js/jquery.zclip.min.js"></script>
+    <script type="text/javascript" src="js/clipboard.min.js"></script>
 
 </head>
 <body>
@@ -47,14 +47,14 @@
 </div>
 
 <!-- success -->
-<div id="success">
+<div id="success" style="display: block">
     <h4>
         恭喜您，提取成功！
     </h4>
     <div class="con">
         <div class="con0">
-            <input type="text" id="suc_inpt">
-            <button type="button" id="copy_btn">复制券码</button>
+            <input type="text" id="suc_inpt" value="tt">
+            <button type="button" id="copy_btn" data-clipboard-action="copy" data-clipboard-target="#suc_inpt">复制券码</button>
         </div>
     </div>
     <a href="#" id="success_sure">立刻下单</a>
@@ -152,17 +152,13 @@
     $('#userInfo_sure').click(function(){
         recharge();
     })
-    //复制(文件要放到服务器中才能运行，直接运行html文件是不行的)
-    $('#copy_input').zclip({        　 //copy_input表示 按钮
-        path: 'js/ZeroClipboard.swf',
-        copy: function(){ 　　　　　　　　　　//复制内容
-            return $('#suc_inpt').val();  　 //mytext表示 内容
-        },
-        afterCopy: function(){ //复制成功
-            // $("<span id='msg'/>").insertAfter($('#copy_input')).text('复制成功');
-            alert('复制成功');
-        }
+    //复制
+    var clipboard = new ClipboardJS('#copy_btn');
+
+    clipboard.on('success', function(e) {
+        errorForm('复制成功');
     });
+    
    
     
 </script>
